@@ -1,0 +1,45 @@
+# Archivos de configuración
+*.env
+.env.local
+.env.dev
+.env.prod
+
+# Archivos de base de datos
+db.sqlite3
+
+# Archivos de caché
+*.pyc
+__pycache__
+
+# Archivos de logs
+*.log
+
+# Archivos temporales
+tmp/
+
+# Archivos de media
+media/
+
+# Archivos estáticos
+static/
+staticfiles/
+
+# Archivos de venv
+venv/
+env/
+
+# Archivos de Docker
+.dockerignore
+
+# Archivos de pruebas
+tests/
+
+# Archivos de cobertura
+coverage/
+
+# Archivos de IDE
+.idea/
+
+# Archivos de configuración de terceros
+.DS_Store
+Thumbs.db
