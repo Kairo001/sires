@@ -18,6 +18,7 @@ MY_APPS = [
     'apps.base',
     'apps.users',
     'apps.catalog',
+    'apps.employee',
 ]
 
 THIRD_APPS = [
@@ -106,7 +107,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny'
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 2
+    'PAGE_SIZE': 10
 }
 
 SPECTACULAR_SETTINGS = {

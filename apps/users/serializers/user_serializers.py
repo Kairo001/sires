@@ -1,11 +1,15 @@
 # Django
 from django.contrib.auth import authenticate
+from django.core.validators import RegexValidator
 
 # Rest Framework
 from rest_framework import serializers
 
 # Models
 from apps.users.models import User
+
+#
+from apps.employee.serializers import EmployeeSerializer, DoctorSerializer, PatientSerializer
 
 
 class ListUserSerializer(serializers.ModelSerializer):
@@ -78,3 +82,16 @@ class UpdatePasswordSerializer(serializers.Serializer):
                 {"new_password": "Las contraseñas no coinciden."}
             )
         return data
+
+
+class UserDoctorSerializer(EmployeeSerializer):
+    email = serializers.EmailField()
+    professional_id = serializers.CharField(
+        max_length=8,
+        validators=[
+            RegexValidator(
+                regex=r"^[0-9]{8}$",
+                message="El número de cédula profesional no es válido."
+            )
+        ]
+    )

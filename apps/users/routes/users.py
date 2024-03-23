@@ -6,4 +6,4 @@ router = DefaultRouter()
 
 router.register(r"users", UserViewSet, basename="users")
 
-user_urls = router.urls
+urlpatterns = router.urls

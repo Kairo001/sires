@@ -14,3 +14,8 @@ class BaseModel(models.Model):
         abstract = True
         get_latest_by = "created"
         ordering = ["-created", "-updated"]
+
+    def delete(self, *args, **kwargs):
+        """Reemplaza el método delete() para desactivar el registro en lugar de eliminarlo."""
+        self.is_active = False
+        self.save()

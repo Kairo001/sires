@@ -1,0 +1,12 @@
+id,value,description
+1,Sexo,
+2,Tipo de sangre,
+3,Clues,Clave única de establecimientos de salud
+4,Nacionalidad,
+5,Entidad federativa,
+6,Religión,
+7,Estado Civil,
+8,Lengua indígena,
+9,Localidad,
+10,Municipio,
+11,Formación académica,

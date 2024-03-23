@@ -23,6 +23,9 @@ class CatalogType(BaseModel):
         db_table = "catalog_type"
         verbose_name = "Tipo de Catálogo"
         verbose_name_plural = "Tipos de Catálogos"
+        indexes = [
+            models.Index(fields=["value"], name="catalog_type_value_idx"),
+        ]
 
     def __str__(self):
         return self.value
@@ -59,6 +62,12 @@ class Catalog(BaseModel):
         db_table = "catalog"
         verbose_name = "Catálogo"
         verbose_name_plural = "Catálogos"
+        indexes = [
+            models.Index(fields=["type"], name="catalog_type_idx"),
+            models.Index(fields=["code"], name="catalog_code_idx"),
+            models.Index(fields=["value"], name="catalog_value_idx"),
+            models.Index(fields=["parent"], name="catalog_parent_idx"),
+        ]
 
     def __str__(self):
         return self.value

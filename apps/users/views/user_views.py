@@ -1,9 +1,11 @@
+# Django
+from django.db import transaction
+
 # DjangoRestFramework
-from rest_framework import viewsets
+from rest_framework import viewsets, status, mixins
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework import status, mixins
 
 # Spectacular
 from drf_spectacular.utils import extend_schema
@@ -11,6 +13,8 @@ from drf_spectacular.utils import extend_schema
 # Serializers
 from apps.users.serializers.user_serializers import UserWithPasswordSerializer, UpdatePasswordSerializer
 from apps.users.serializers.user_serializers import ListUserSerializer, UserSerializer
+from apps.users.serializers.user_serializers import UserDoctorSerializer
+from apps.employee.serializers import EmployeeSerializer, DoctorSerializer, PatientSerializer
 
 
 class UserViewSet(
@@ -59,3 +63,37 @@ class UserViewSet(
         user.set_password(serializer.validated_data["new_password"])
         user.save()
         return Response(status=status.HTTP_200_OK)
+
+    @extend_schema(request=UserDoctorSerializer, responses={status.HTTP_200_OK: UserDoctorSerializer})
+    @action(detail=False, methods=["post"], url_path="create-doctor")
+    @transaction.atomic
+    def create_doctor(self, request):
+        """Crea un nuevo doctor."""
+        user_data = {
+            "email": request.data.pop("email"),
+            "password": request.data.get("curp"),
+            "confirm_password": request.data.get("curp"),
+        }
+        professional_id = request.data.pop("professional_id")
+
+        curp = request.data.get("curp")
+        employee = EmployeeSerializer.Meta.model.objects.filter(curp=curp).first()
+        if employee is None:
+            print("employee is None")
+            employee_serializer = EmployeeSerializer(data=request.data)
+            employee_serializer.is_valid(raise_exception=True)
+            employee = employee_serializer.save()
+
+        user_serializer = UserWithPasswordSerializer(data=user_data)
+        user_serializer.is_valid(raise_exception=True)
+        user = user_serializer.save()
+        doctor_data = {
+            "professional_id": professional_id,
+            "curp": employee.curp,
+            "user": user.id,
+        }
+        doctor_serializer = DoctorSerializer(data=doctor_data)
+        doctor_serializer.is_valid(raise_exception=True)
+        doctor = doctor_serializer.save()
+
+        return Response(status=status.HTTP_201_CREATED)

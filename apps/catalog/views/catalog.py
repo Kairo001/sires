@@ -22,13 +22,6 @@ class CatalogTypeViewSet(viewsets.ModelViewSet):
             return self.serializer_class.Meta.model.objects.filter(is_active=True)
         return self.get_serializer().Meta.model.objects.filter(id=pk, is_active=True).first()
 
-    def destroy(self, request, *args, **kwargs):
-        """Elimina un tipo de catálogo actualizando el campo is_active a False."""
-        catalog_type = self.get_object()
-        catalog_type.is_active = False
-        catalog_type.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
     @extend_schema(responses={status.HTTP_200_OK: CatalogSerializer(many=True)})
     @action(detail=True, methods=["get"])
     def catalogs(self, request, pk=None):
@@ -53,13 +46,6 @@ class CatalogViewSet(viewsets.ModelViewSet):
         if pk is None:
             return self.serializer_class.Meta.model.objects.filter(type__is_active=True, is_active=True)
         return self.get_serializer().Meta.model.objects.filter(id=pk, type__is_active=True, is_active=True).first()
-
-    def destroy(self, request, *args, **kwargs):
-        """Elimina un catálogo actualizando el campo is_active a False."""
-        catalog = self.get_object()
-        catalog.is_active = False
-        catalog.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @extend_schema(responses={status.HTTP_200_OK: CatalogSerializer(many=True)})
     @action(detail=True, methods=["get"])

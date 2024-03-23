@@ -1,0 +1,38 @@
+id,type,code,value,parent,description
+1,1,H,Hombre,,
+2,1,M,Mujer,,
+3,2,,AP,,A Positivo
+4,2,,AN,,A Negativo
+5,2,,BP,,B Positivo
+6,2,,BN,,B Negativo
+7,2,,ABP,,AB Positivo
+8,2,,ABN,,AB Negativo
+9,2,,OP,,O Positivo
+10,2,,ON,,O Negativo
+11,3,123,Compensar,,
+12,3,213,Aliansalud,,
+13,3,321,Famisanar,,
+14,4,423,Noruega,,NOR
+15,4,223,Mexicana,,MEX
+16,4,208,Colombiana,,COL
+17,5,16,Michoacán de Ocampo,,MN
+18,5,09,Ciudad de México,,DF
+19,5,00,No especificado,,NE
+20,10,053,Morelia,17,
+21,10,007,Iztapalapa,18,
+22,10,054,Morelos,17,
+23,9,0053,Los Cuervos,20,
+24,9,0025,La Palma,22,
+25,9,0001,Iztapalapa,21,
+26,6,110103,Católico,,
+27,6,130500,Metodista,,
+28,6,230305,Sijismo,,
+29,7,,Soltero,,
+30,7,,Casado,,
+31,7,,Unión libre,,
+32,8,1111,Purépecha,,
+33,8,0400,Zapoteco,,
+34,8,0922,Maya,,
+35,11,1,Primaria,,Grado 1
+36,11,5705,Maestría en periodismo,,Grado 10
+37,11,639,Ingeniería electrónica,,Grado 8
