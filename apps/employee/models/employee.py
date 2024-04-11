@@ -9,16 +9,16 @@ from apps.base.validators import ActiveValidator
 
 # Models
 from apps.catalog.models import Catalog
-from apps.employee.models.company import Company
 
 
 class Employee(BaseModel):
     """employee model.
     Este modelo almacena la información de todos los empleados de una empresa.
     """
+    id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name=_("ID"))
     curp = models.CharField(
         _("CURP"),
-        primary_key=True,
+        unique=True,
         max_length=18,
         validators=[
             RegexValidator(
@@ -35,13 +35,6 @@ class Employee(BaseModel):
         max_length=100,
         null=True, blank=True,
         help_text=_("Segundo apellido del empleado."),
-    )
-    company = models.ForeignKey(
-        Company,
-        on_delete=models.PROTECT,
-        related_name="employees",
-        validators=[ActiveValidator()],
-        help_text=_("Empresa a la que pertenece el empleado."),
     )
     birth_date = models.DateField(_("Birth Date"), help_text=_("Fecha de nacimiento del empleado."))
     height = models.DecimalField(
@@ -188,11 +181,14 @@ class Employee(BaseModel):
 
     class Meta:
         db_table = "employee"
-        indexes = [
-            models.Index(fields=["company"], name="company_index"),
-        ]
         verbose_name = "Empleado"
         verbose_name_plural = "Empleados"
+        indexes = [
+            models.Index(fields=["curp"], name="employee_curp_idx"),
+            models.Index(fields=["name"], name="employee_name_idx"),
+            models.Index(fields=["last_name"], name="employee_last_name_idx"),
+            models.Index(fields=["mobile_phone"], name="employee_mobile_phone_idx"),
+        ]
 
     def __str__(self):
         return self.name

@@ -15,10 +15,9 @@ class Patient(BaseModel):
     Este modelo almacena la información de los pacientes que se registrarán en el sistema.
     El paciente es un empleado que tiene un número de seguro social.
     """
-    curp = models.OneToOneField(
+    employee = models.OneToOneField(
         Employee,
         on_delete=models.PROTECT,
-        primary_key=True,
         related_name="patient",
         help_text=_("Clave Única de Registro de Población."),
     )
@@ -36,7 +35,7 @@ class Patient(BaseModel):
         verbose_name_plural = "Pacientes"
 
     def __str__(self):
-        return self.curp.name
+        return self.employee.name
 
     def get_full_name(self):
-        return f"{self.curp.name} {self.curp.last_name} {self.curp.second_last_name}"
+        return f"{self.employee.name} {self.employee.last_name} {self.employee.second_last_name}"

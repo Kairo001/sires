@@ -16,10 +16,9 @@ class Doctor(BaseModel):
     Este modelo almacena la información de los doctores que se registrarán en el sistema.
     El doctor es un empleado que tiene un número de cédula profesional.
     """
-    curp = models.OneToOneField(
+    employee = models.OneToOneField(
         Employee,
         on_delete=models.PROTECT,
-        primary_key=True,
         related_name="doctor",
         help_text=_("Clave Única de Registro de Población."),
     )
@@ -48,7 +47,7 @@ class Doctor(BaseModel):
         verbose_name_plural = "Doctores"
 
     def __str__(self):
-        return self.curp.name
+        return self.employee.name
 
     def get_full_name(self):
-        return f"{self.curp.name} {self.curp.last_name} {self.curp.second_last_name}"
+        return f"{self.employee.name} {self.employee.last_name} {self.employee.second_last_name}"

@@ -1,5 +1,5 @@
 # Django Rest Framework
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 
 # Models
 from apps.employee.models import Doctor
@@ -8,6 +8,8 @@ from apps.employee.models import Doctor
 from apps.employee.serializers import DoctorSerializer
 
 
-class DoctorViewSet(viewsets.ModelViewSet):
+class DoctorViewSet(mixins.RetrieveModelMixin,
+                    mixins.ListModelMixin,
+                    viewsets.GenericViewSet):
     queryset = Doctor.objects.filter(is_active=True)
     serializer_class = DoctorSerializer

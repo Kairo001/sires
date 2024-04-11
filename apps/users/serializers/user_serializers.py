@@ -9,7 +9,7 @@ from rest_framework import serializers
 from apps.users.models import User
 
 #
-from apps.employee.serializers import EmployeeSerializer, DoctorSerializer, PatientSerializer
+from apps.employee.serializers import EmployeeSerializer
 
 
 class ListUserSerializer(serializers.ModelSerializer):
@@ -95,3 +95,7 @@ class UserDoctorSerializer(EmployeeSerializer):
             )
         ]
     )
+
+
+class UserPatientSerializer(EmployeeSerializer):
+    email = serializers.EmailField()

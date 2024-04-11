@@ -13,14 +13,12 @@ from drf_spectacular.utils import extend_schema
 # Serializers
 from apps.users.serializers.user_serializers import UserWithPasswordSerializer, UpdatePasswordSerializer
 from apps.users.serializers.user_serializers import ListUserSerializer, UserSerializer
-from apps.users.serializers.user_serializers import UserDoctorSerializer
+from apps.users.serializers.user_serializers import UserDoctorSerializer, UserPatientSerializer
 from apps.employee.serializers import EmployeeSerializer, DoctorSerializer, PatientSerializer
 
 
 class UserViewSet(
-    mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
-    mixins.DestroyModelMixin,
     mixins.ListModelMixin,
     viewsets.GenericViewSet
 ):
@@ -33,25 +31,10 @@ class UserViewSet(
             return self.list_serializer_class.Meta.model.objects.filter(is_active=True)
         return self.get_serializer().Meta.model.objects.filter(id=pk, is_active=True).first()
 
-    @extend_schema(request=UserWithPasswordSerializer)
-    def create(self, request, *args, **kwargs):
-        """Crea un nuevo usuario."""
-        serializer = UserWithPasswordSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        return Response(self.serializer_class(user).data, status=status.HTTP_201_CREATED)
-
     @extend_schema(responses={status.HTTP_200_OK: ListUserSerializer})
     def list(self, request, *args, **kwargs):
         """Lista todos los usuarios."""
         return super().list(request)
-
-    def destroy(self, request, *args, **kwargs):
-        """Elimina un usuario actualizando el campo is_active a False."""
-        user = self.get_object()
-        user.is_active = False
-        user.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @extend_schema(request=UpdatePasswordSerializer, responses={status.HTTP_200_OK: None})
     @action(detail=True, methods=["put"], url_path="update-password")
@@ -64,7 +47,16 @@ class UserViewSet(
         user.save()
         return Response(status=status.HTTP_200_OK)
 
-    @extend_schema(request=UserDoctorSerializer, responses={status.HTTP_200_OK: UserDoctorSerializer})
+    @extend_schema(request=UserWithPasswordSerializer, responses={status.HTTP_201_CREATED: None})
+    @action(detail=False, methods=["post"], url_path="create-company")
+    def create_company(self, request):
+        """Crea una nueva companía."""
+        serializer = UserWithPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_201_CREATED)
+
+    @extend_schema(request=UserDoctorSerializer, responses={status.HTTP_201_CREATED: None})
     @action(detail=False, methods=["post"], url_path="create-doctor")
     @transaction.atomic
     def create_doctor(self, request):
@@ -79,7 +71,6 @@ class UserViewSet(
         curp = request.data.get("curp")
         employee = EmployeeSerializer.Meta.model.objects.filter(curp=curp).first()
         if employee is None:
-            print("employee is None")
             employee_serializer = EmployeeSerializer(data=request.data)
             employee_serializer.is_valid(raise_exception=True)
             employee = employee_serializer.save()
@@ -89,11 +80,42 @@ class UserViewSet(
         user = user_serializer.save()
         doctor_data = {
             "professional_id": professional_id,
-            "curp": employee.curp,
+            "employee": employee.id,
             "user": user.id,
         }
         doctor_serializer = DoctorSerializer(data=doctor_data)
         doctor_serializer.is_valid(raise_exception=True)
-        doctor = doctor_serializer.save()
+        doctor_serializer.save()
+
+        return Response(status=status.HTTP_201_CREATED)
+
+    @extend_schema(request=UserPatientSerializer, responses={status.HTTP_201_CREATED: None})
+    @action(detail=False, methods=["post"], url_path="create-patient")
+    @transaction.atomic
+    def create_patient(self, request):
+        """Crea un nuevo paciente."""
+        user_data = {
+            "email": request.data.pop("email"),
+            "password": request.data.get("curp"),
+            "confirm_password": request.data.get("curp"),
+        }
+
+        curp = request.data.get("curp")
+        employee = EmployeeSerializer.Meta.model.objects.filter(curp=curp).first()
+        if employee is None:
+            employee_serializer = EmployeeSerializer(data=request.data)
+            employee_serializer.is_valid(raise_exception=True)
+            employee = employee_serializer.save()
+
+        user_serializer = UserWithPasswordSerializer(data=user_data)
+        user_serializer.is_valid(raise_exception=True)
+        user = user_serializer.save()
+        patient_data = {
+            "employee": employee.id,
+            "user": user.id,
+        }
+        patient_serializer = PatientSerializer(data=patient_data)
+        patient_serializer.is_valid(raise_exception=True)
+        patient_serializer.save()
 
         return Response(status=status.HTTP_201_CREATED)

@@ -24,12 +24,15 @@ MY_APPS = [
 THIRD_APPS = [
     'rest_framework',
     'drf_spectacular',
+    "corsheaders",
     'whitenoise.runserver_nostatic',
+    'django_filters',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + MY_APPS + THIRD_APPS
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -59,6 +62,11 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
+
+# Cors & Csrf
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_CREDENTIALS = True
 
 # Password validation
 
@@ -116,6 +124,9 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
+
+# Django Filters
+DEFAULT_LOOKUP_EXPR = 'contains'
 
 #
 CSRF_TRUSTED_ORIGINS = ['http://*', 'https://*']
