@@ -16,25 +16,36 @@ from apps.users.serializers.user_serializers import ListUserSerializer, UserSeri
 from apps.users.serializers.user_serializers import UserDoctorSerializer, UserPatientSerializer
 from apps.employee.serializers import EmployeeSerializer, DoctorSerializer, PatientSerializer
 
+# Models
+from apps.users.models import User
+
+# Filters
+from django_filters import rest_framework as filters
+
 
 class UserViewSet(
     mixins.RetrieveModelMixin,
     mixins.ListModelMixin,
     viewsets.GenericViewSet
 ):
+    queryset = User.objects.filter(is_active=True)
     list_serializer_class = ListUserSerializer
     serializer_class = UserSerializer
     parser_classes = [JSONParser, MultiPartParser]
-
-    def get_queryset(self, pk=None):
-        if pk is None:
-            return self.list_serializer_class.Meta.model.objects.filter(is_active=True)
-        return self.get_serializer().Meta.model.objects.filter(id=pk, is_active=True).first()
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_fields = ["email"]
 
     @extend_schema(responses={status.HTTP_200_OK: ListUserSerializer})
     def list(self, request, *args, **kwargs):
-        """Lista todos los usuarios."""
-        return super().list(request)
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.list_serializer_class(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.list_serializer_class(queryset, many=True)
+        return Response(serializer.data)
 
     @extend_schema(request=UpdatePasswordSerializer, responses={status.HTTP_200_OK: None})
     @action(detail=True, methods=["put"], url_path="update-password")

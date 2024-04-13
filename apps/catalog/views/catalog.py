@@ -1,10 +1,7 @@
 # DjangoRestFramework
-from rest_framework import viewsets
-from rest_framework.parsers import JSONParser, MultiPartParser
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework import status
-from django.shortcuts import get_object_or_404
 
 # Serializers
 from apps.catalog.serializers.catalog import CatalogTypeSerializer, CatalogSerializer
@@ -12,15 +9,15 @@ from apps.catalog.serializers.catalog import CatalogTypeSerializer, CatalogSeria
 # Spectacular
 from drf_spectacular.utils import extend_schema
 
+# Filters
+from django_filters import rest_framework as filters
+
 
 class CatalogTypeViewSet(viewsets.ModelViewSet):
+    queryset = CatalogTypeSerializer.Meta.model.objects.filter(is_active=True)
     serializer_class = CatalogTypeSerializer
-    parser_classes = [JSONParser, MultiPartParser]
-
-    def get_queryset(self, pk=None):
-        if pk is None:
-            return self.serializer_class.Meta.model.objects.filter(is_active=True)
-        return self.get_serializer().Meta.model.objects.filter(id=pk, is_active=True).first()
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_fields = ["value"]
 
     @extend_schema(responses={status.HTTP_200_OK: CatalogSerializer(many=True)})
     @action(detail=True, methods=["get"])
@@ -39,13 +36,10 @@ class CatalogTypeViewSet(viewsets.ModelViewSet):
 
 
 class CatalogViewSet(viewsets.ModelViewSet):
+    queryset = CatalogSerializer.Meta.model.objects.filter(type__is_active=True, is_active=True)
     serializer_class = CatalogSerializer
-    parser_classes = [JSONParser, MultiPartParser]
-
-    def get_queryset(self, pk=None):
-        if pk is None:
-            return self.serializer_class.Meta.model.objects.filter(type__is_active=True, is_active=True)
-        return self.get_serializer().Meta.model.objects.filter(id=pk, type__is_active=True, is_active=True).first()
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_fields = ["type__value", "value", "parent__value", "code"]
 
     @extend_schema(responses={status.HTTP_200_OK: CatalogSerializer(many=True)})
     @action(detail=True, methods=["get"])

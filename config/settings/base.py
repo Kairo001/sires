@@ -110,6 +110,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Django Rest Framework
 
 REST_FRAMEWORK = {
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+    ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny'
@@ -126,7 +129,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 # Django Filters
-DEFAULT_LOOKUP_EXPR = 'contains'
+FILTERS_DEFAULT_LOOKUP_EXPR = 'contains'
 
 #
 CSRF_TRUSTED_ORIGINS = ['http://*', 'https://*']
